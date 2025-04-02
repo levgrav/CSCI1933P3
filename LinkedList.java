@@ -26,6 +26,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
             currNode = currNode.getNext();
         }
         currNode.setNext(element);
+        size += 1;
     } else {
         return false;
     }
@@ -50,7 +51,17 @@ public class LinkedList<T extends Comparable<T>> implements List {
    * @return if the addition was successful.
    */
   boolean add(int index, T element){
-    
+    Node currNode = head;
+    if (index < size && index > 0){
+        for (int i = 0; i < size; i++){
+            currNode = currNode.getNext();
+        }
+        Node nextNode = currNode.getNext();
+        currNode.setNext(new Node(element));
+        currNode.getNext().setNext(nextNode);
+    } else{
+        return false;
+    }
   }
 
 
@@ -119,7 +130,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
    * @return size of the list.
    */
   int size(){
-
+    return size;
   }
 
 
