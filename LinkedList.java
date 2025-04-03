@@ -19,7 +19,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
    * @param element element to be added to the list.
    * @return if the addition was successful.
    */
-  boolean add(T element){
+  public boolean add(T element){
     Node currNode = head;
     if (element != null){
         while (currNode.getNext != null){
@@ -50,8 +50,8 @@ public class LinkedList<T extends Comparable<T>> implements List {
    * @param element element to be added to the list.
    * @return if the addition was successful.
    */
-  boolean add(int index, T element){
-    Node currNode = head;
+  public boolean add(int index, T element){
+    Node currNode = head.getNext();
     if (index < size && index > 0){
         for (int i = 0; i <= size; i++){
             currNode = currNode.getNext();
@@ -62,6 +62,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
     } else{
         return false;
     }
+    return true;
   }
 
 
@@ -69,7 +70,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
   /**
    * Remove all elements from the list and updates isSorted accordingly.
    */
-  void clear(){
+  public void clear(){
     head = head.setNext(null);
     size = 0;
   }
@@ -83,7 +84,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
    * @param index index to obtain from the list.
    * @return the element at the given index.
    */
-  T get(int index){
+  public T get(int index){
     if (index < size){
         for (int i = 0; i <= size; i++){
             currNode = currNode.getNext();
@@ -107,8 +108,14 @@ public class LinkedList<T extends Comparable<T>> implements List {
    * @param element element to be found in the list.
    * @return first index of the element in the list.
    */
-  int indexOf(T element){
-
+  public int indexOf(T element){
+    Node currNode = head;
+    int idx = 0;
+    while (currNode.getNext() != null){
+      if (currNode.getData().compareTo(element) == 0){
+        return 
+      } 
+    }
   }
 
 
@@ -118,7 +125,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
    *
    * @return if the list is empty.
    */
-  boolean isEmpty(){
+  public boolean isEmpty(){
 
   }
 
@@ -136,7 +143,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
    *
    * @return size of the list.
    */
-  int size(){
+  public int size(){
     return size;
   }
 
@@ -151,7 +158,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
    * to use the public int compareTo(T other) method.
    * Updates isSorted accordingly.
    */
-  void sort(){
+  public void sort(){
 
   }
 
@@ -167,7 +174,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
    * @param index position to remove from the list.
    * @return the removed element.
    */
-  T remove(int index){
+  public T remove(int index){
 
   }
 
@@ -177,7 +184,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
    * Reverses the list IN PLACE. Any use of intermediate data structures will yield
    * your solution invalid.
    */
-  void reverse(){
+  public void reverse(){
 
   }
 
@@ -190,7 +197,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
    * to the first occurrences of other elements.
    * Example A,B,A,C,B,A,D -> A,B,C,D
    */
-  void removeDuplicates(){
+  public void removeDuplicates(){
 
   }
 
@@ -212,7 +219,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
    *
    * @param otherList list to be used for finding the intersection.
    */
-  void intersect(List<T> otherList){
+  public void intersect(List<T> otherList){
 
   }
 
@@ -249,7 +256,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
    *
    * @param list a second list to be merged with this one.
    */
-  void merge(List<T> list){
+  public public void merge(List<T> list){
 
   }
 
@@ -260,7 +267,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
    * If the list is empty, return NULL.
    * Note, consider how sorting can affect runtime or optimize this solution
    */
-  T getMin(){
+  public T getMin(){
 
   }
 
@@ -272,7 +279,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
    * If isSorted is true, make a case where this method is optimized.
    * Hint: Use a tail pointer for your LinkedList implementation.
    */
-  T getMax(){
+  public T getMax(){
 
   }
 
@@ -294,7 +301,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
    *
    * @return String representation of the list.
    */
-  String toString(){
+  public String toString(){
 
   }
 
@@ -305,7 +312,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
    *
    * @return isSorted boolean attribute.
    */
-  boolean isSorted(){
+  public boolean isSorted(){
 
   }
 }
