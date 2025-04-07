@@ -22,11 +22,15 @@ public class LinkedList<T extends Comparable<T>> implements List {
   public boolean add(T element){
     Node currNode = head;
     if (element != null){
-        while (currNode.getNext != null){
+        while (currNode.getNext() != null){
             currNode = currNode.getNext();
         }
-        currNode.setNext(element);
+        currNode.setNext(new Node(element));
+        if (currNode.getData().compareTo(element) > 0){
+            isSorted = false;
+        }
         size += 1;
+        return true;
     } else {
         return false;
     }
@@ -57,8 +61,12 @@ public class LinkedList<T extends Comparable<T>> implements List {
             currNode = currNode.getNext();
         }
         Node nextNode = currNode.getNext();
+        if (currNode.getData().compareTo(element) > 0 || nextNode.getData().compareTo(element) < 0){
+            isSorted = false;
+        }
         currNode.setNext(new Node(element));
         currNode.getNext().setNext(nextNode);
+
     } else{
         return false;
     }
@@ -71,8 +79,9 @@ public class LinkedList<T extends Comparable<T>> implements List {
    * Remove all elements from the list and updates isSorted accordingly.
    */
   public void clear(){
-    head = head.setNext(null);
+    head = new Node();
     size = 0;
+    isSorted = true;
   }
 
 
@@ -85,6 +94,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
    * @return the element at the given index.
    */
   public T get(int index){
+    Node currNode = head;
     if (index < size){
         for (int i = 0; i <= size; i++){
             currNode = currNode.getNext();
@@ -109,13 +119,20 @@ public class LinkedList<T extends Comparable<T>> implements List {
    * @return first index of the element in the list.
    */
   public int indexOf(T element){
-    Node currNode = head;
+    Node currNode = head.getNext();
     int idx = 0;
-    while (currNode.getNext() != null){
+
+    while (currNode.getNext() != null && element != null){
       if (currNode.getData().compareTo(element) == 0){
-        return 
-      } 
+        return idx;
+      } else if ((currNode.getData().compareTo(element) > 0 && isSorted)) {
+          return -1;
+      } else{
+          currNode = currNode.getNext();
+          idx += 1;
+      }
     }
+    return -1;
   }
 
 
@@ -126,7 +143,10 @@ public class LinkedList<T extends Comparable<T>> implements List {
    * @return if the list is empty.
    */
   public boolean isEmpty(){
-
+    if (head.getNext() == null){
+        return true;
+    }
+    return false;
   }
 
 
@@ -144,7 +164,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
    * @return size of the list.
    */
   public int size(){
-    return size;
+      return size;
   }
 
 
@@ -175,7 +195,22 @@ public class LinkedList<T extends Comparable<T>> implements List {
    * @return the removed element.
    */
   public T remove(int index){
-
+    Node currNode = head.getNext();
+      if (index < size){
+        for (int i = 0; i < index; i ++){
+            currNode = currNode.getNext();
+        }
+        if (index + 1 == size || currNode.getData().compareTo(currNode.getNext().getNext().getData()) <= 0){
+            isSorted = true;
+        } else {
+            isSorted = false;
+        }
+        Node remNode = currNode.getNext();
+        currNode.setNext(currNode.getNext().getNext());
+        return (T) remNode.getData();
+    } else {
+        return null;
+    }
   }
 
 
