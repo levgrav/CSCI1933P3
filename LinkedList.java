@@ -2,12 +2,14 @@ package CSCI1933P3;
 
 public class LinkedList<T extends Comparable<T>> implements List<T> {
     private Node<T> head;
+    private Node<T> tail;
     private boolean isSorted;
     private int size;
 
     public LinkedList() {
         isSorted = true;
         head = null;
+        tail = null;
         size = 0;
     }
     /**
@@ -23,6 +25,7 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
     if (!(element == null)){
         if (head == null){
             head = new Node<T>(element);
+            tail = head;
         } else {
             Node<T> curNode = head;
             while (curNode.getNext() != null){
@@ -33,6 +36,7 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
                 isSorted = false;
             }
             size += 1;
+            tail = curNode.getNext();
         }
         return true;
     }
@@ -61,6 +65,7 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
               head = new Node<T>(element, head);
       } else if (size == 0) {
           head = new Node<T>(element);
+          tail = head;
       } else if (index > 0 && index < size){
           Node<T> cNode = head;
           for (int i = 0; i < index - 1; i++){
@@ -71,6 +76,9 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
           size ++;
           if (cNode.getData().compareTo(element) > 0 || element.compareTo(insertNode.getNext().getData()) > 0) {
               isSorted = false;
+          }
+          if (cNode.getNext().getNext() == null){
+              tail = cNode.getNext();
           }
       } else {
           return false;
@@ -85,6 +93,7 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
    */
   public void clear(){
     head = null;
+    tail = null;
     size = 0;
     isSorted = true;
   }
@@ -180,9 +189,20 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
    * Updates isSorted accordingly.
    */
   public void sort(){
-      //insertion sort
-    if (!isSorted){
-        Node sortStart = head.getNext().getNext();
+      if (!isSorted){
+          Node  //insertion sort
+<T> cNode = head;
+        Node<T> nNode = head;
+        int i, j;
+        for (i = 1; i < size; i++) {
+            cNode = cNode.getNext();
+            nNode = head;
+            for (j = 0; j <= i && cNode.getData().compareTo(nNode.getData()) < 0; j++) {
+                nNode = nNode.getNext();
+            }
+            add(i, cNode.getData());
+            remove(i+1);
+        }
     }
   }
 
@@ -295,8 +315,10 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
    *
    * @param list a second list to be merged with this one.
    */
-  public public void merge(List<T> list){
-
+  public void merge(List<T> otherlist){
+//      LinkedList<T> other = (LinkedList<T>) otherList;
+//      sort();
+//      other.sort();
   }
 
 
@@ -307,7 +329,20 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
    * Note, consider how sorting can affect runtime or optimize this solution
    */
   public T getMin(){
-
+    if (size == 0){
+        return null;
+    } else if (isSorted){
+        return head.getData();
+    } else {
+        T value = head.getData();
+        Node<T> currNode = head.getNext();
+        for (int i = 1; i < size; i++){
+            if (value.compareTo(currNode.getData()) > 0) {
+                value = currNode.getData();
+            }
+        }
+        return value;
+    }
   }
 
 
@@ -319,7 +354,20 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
    * Hint: Use a tail pointer for your LinkedList implementation.
    */
   public T getMax(){
-
+      if (size == 0){
+          return null;
+      } else if (isSorted){
+          return tail.getData();
+      } else {
+          T value = head.getData();
+          Node<T> currNode = head.getNext();
+          for (int i = 1; i < size; i++){
+              if (value.compareTo(currNode.getData()) < 0) {
+                  value = currNode.getData();
+              }
+          }
+          return value;
+      }
   }
 
 
