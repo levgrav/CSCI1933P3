@@ -389,7 +389,14 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
    * @return String representation of the list.
    */
   public String toString(){
-
+      String s = "";
+      Node<T> cNode = head;
+      for (int i = 0; i< size; i++) {
+          s += cNode.getData();
+          s += "\n";
+          cNode = cNode.getNext();
+      }
+      return s;
   }
 
 
