@@ -99,8 +99,8 @@ public class LinkedList<T extends Comparable<T>> implements List {
 
   /**
    * Return the first index of element in the list. If element
-   * is null or not found in the list, return -1. 
-   * 
+   * is null or not found in the list, return -1.
+   *
    * If isSorted is true, uses the ordering of the list to increase the efficiency
    * of the search.
    *
@@ -113,8 +113,8 @@ public class LinkedList<T extends Comparable<T>> implements List {
     int idx = 0;
     while (currNode.getNext() != null){
       if (currNode.getData().compareTo(element) == 0){
-        return 
-      } 
+        return 0;
+      }
     }
   }
 
@@ -151,9 +151,9 @@ public class LinkedList<T extends Comparable<T>> implements List {
 
   /**
    *Sort the elements of the list in ascending order using one of the following sorting algorithms: Selection, Bubble, Insertion
-   * 
+   *
    * If isSorted is true, increase the efficiency of the sort method
-   * 
+   *
    * Hint: Since T extends Comparable, you will find it useful
    * to use the public int compareTo(T other) method.
    * Updates isSorted accordingly.
@@ -275,7 +275,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
 
   /**
    * Returns the maximum value of the List
-   * 
+   *
    * If isSorted is true, make a case where this method is optimized.
    * Hint: Use a tail pointer for your LinkedList implementation.
    */
@@ -306,7 +306,7 @@ public class LinkedList<T extends Comparable<T>> implements List {
   }
 
 
-  
+
   /**
    * Simply returns the isSorted attribute.
    *
