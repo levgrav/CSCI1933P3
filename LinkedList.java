@@ -35,9 +35,9 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
             if (curNode.getData().compareTo(element) > 0){
                 isSorted = false;
             }
+            size += 1;
             tail = curNode.getNext();
         }
-        size += 1;
         return true;
     }
     return false;
@@ -136,7 +136,7 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
     Node<T> currNode = head;
     int idx = 0;
 
-    while (currNode != null && element != null){
+    while (currNode.getNext() != null && element != null){
       if (currNode.getData().compareTo(element) == 0){
         return idx;
       } else if ((currNode.getData().compareTo(element) > 0 && isSorted)) {
@@ -157,7 +157,7 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
    * @return if the list is empty.
    */
   public boolean isEmpty() {
-      return head == null;
+      return head.getNext() == null;
   }
 
 
@@ -188,59 +188,27 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
    * to use the public int compareTo(T other) method.
    * Updates isSorted accordingly.
    */
-  public void sort() { //change it up a bit
-      if (head == null || head.getNext() == null) {
-          isSorted = true;
-          return;
-      }
-
-      boolean swapped = true;
-      while (swapped) {
-          swapped = false;
-          Node<T> prev = null;
-          Node<T> curr = head;
-
-          while (curr != null && curr.getNext() != null) {
-              Node<T> next = curr.getNext();
-
-              if (curr.getData().compareTo(next.getData()) > 0) {
-                  // Swap curr and next
-                  if (prev == null) {
-                      // Swapping at the head
-                      curr.setNext(next.getNext());
-                      next.setNext(curr);
-                      head = next;
-                      prev = next;
-                  } else {
-                      prev.setNext(next);
-                      curr.setNext(next.getNext());
-                      next.setNext(curr);
-                      prev = next;
-                  }
-
-                  swapped = true;
-              } else {
-                  // No swap, just move forward
-                  prev = curr;
-                  curr = curr.getNext();
-              }
-          }
-      }
-      // Update tail and mark as sorted
-      size = 0;
-      Node<T> cNode = head;
-      while (cNode != null){
-          size++;
-          if (cNode.getNext() == null) {
-              tail = cNode;
-          }
-          cNode = cNode.getNext();
-      }
-
+  public void sort(){
+      if (!isSorted){
+          Node  //insertion sort
+<T> cNode = head;
+        Node<T> nNode = head;
+        int i, j;
+        for (i = 1; i < size; i++) {
+            cNode = cNode.getNext();
+            nNode = head;
+            for (j = 0; j <= i && cNode.getData().compareTo(nNode.getData()) < 0; j++) {
+                nNode = nNode.getNext();
+            }
+            add(i, cNode.getData());
+            remove(i+1);
+        }
+    }
   }
 
 
-    /**
+
+  /**
    * Remove whatever is at index 'index' in the list and return
    * it. If index is out-of-bounds, return null. For the ArrayList,
    * elements to the right of index should be shifted over to maintain
@@ -250,90 +218,38 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
    * @param index position to remove from the list.
    * @return the removed element.
    */
-    public T remove(int index) { //change this up a bit
-        if (index < 0 || index >= size || head == null) {
-            return null;  // Index out of bounds or list is empty
+  public T remove(int index){
+    Node currNode = head.getNext();
+      if (index < size){
+        for (int i = 0; i < index; i ++){
+            currNode = currNode.getNext();
         }
-
-        Node<T> currNode = head;
-        Node<T> prevNode = null;
-        Node<T> remNode = null;
-
-        if (index == 0) { // Removing from the head
-            remNode = head;
-            head = head.getNext();  // Move head to the next node
-            if (head == null) {
-                tail = null;  // If list becomes empty, tail should also be null
-            }
-        } else if (index == size - 1) { // Removing from the tail
-            // Traverse the list to find the node just before the tail
-            currNode = head;
-            while (currNode.getNext() != null && currNode.getNext().getNext() != null) {
-                currNode = currNode.getNext();
-            }
-            remNode = currNode.getNext();  // This will be the tail node
-            currNode.setNext(null);  // Disconnect the tail node
-            tail = currNode;  // Update the tail reference
-        } else { // Removing from the middle
-            for (int i = 0; i < index; i++) {
-                prevNode = currNode;
-                currNode = currNode.getNext();
-            }
-            remNode = currNode;
-            prevNode.setNext(currNode.getNext());  // Skip the current node
+        if (index + 1 == size || currNode.getData().compareTo(currNode.getNext().getNext().getData()) <= 0){
+            isSorted = true;
+        } else {
+            isSorted = false;
         }
-
-        size--;  // Decrease size of the list
-        if (!isSorted) {  // If the list is unsorted, check for sorting condition
-            checkSorted();
-        }
-
-        return remNode.getData();
+        Node remNode = currNode.getNext();
+        currNode.setNext(currNode.getNext().getNext());
+        return (T) remNode.getData();
+    } else {
+        return null;
     }
-
-    // Method to check if the list is sorted
-    private void checkSorted() {
-        Node<T> curr = head;
-        isSorted = true;  // Assume sorted until proven otherwise
-
-        while (curr != null && curr.getNext() != null) {
-            if (curr.getData().compareTo(curr.getNext().getData()) > 0) {
-                isSorted = false;
-                break;  // No need to check further, it's already unsorted
-            }
-            curr = curr.getNext();
-        }
-    }
+  }
 
 
-    /**
+
+  /**
    * Reverses the list IN PLACE. Any use of intermediate data structures will yield
    * your solution invalid.
    */
-    public void reverse() { // change this up a bit
-        if (head == null || head.getNext() == null) {
-            return; // Nothing to reverse
-        }
+  public void reverse(){
 
-        Node<T> prev = null;
-        Node<T> curr = head;
-        tail = head; // The old head becomes the new tail
-
-        while (curr != null) {
-            Node<T> next = curr.getNext(); // Store next
-            curr.setNext(prev);            // Reverse link
-            prev = curr;                   // Move prev forward
-            curr = next;                   // Move curr forward
-        }
-
-        head = prev; // Update head to new front
-
-        //TODO: add in a check sorted function
-        isSorted = false; // Reversal likely destroys sorted order
-    }
+  }
 
 
-    /**
+
+  /**
    * Remove all duplicate elements from the list.
    * The removal must be done in a stable manner,
    * or in other words the first occurrence of an element must keep its relative order
@@ -343,6 +259,8 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
   public void removeDuplicates(){
 
   }
+
+
 
   /**
    * Creates the intersection of 2 lists. The resulting intersection should be reflected in the calling List
@@ -360,53 +278,13 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
    *
    * @param otherList list to be used for finding the intersection.
    */
-  public void intersect(List<T> otherList) { // change this up a bit
-      if (otherList == null || otherList.isEmpty()) {
-          clear(); // If otherList is null or empty, clear the calling list
-          return;
-      }
+  public void intersect(List<T> otherList){
 
-      LinkedList<T> other = (LinkedList<T>) otherList;
-
-      sort(); // Sort the calling list
-      other.sort(); // Sort the other list
-
-      Node<T> dummy = new Node<>(null); // Dummy node for building the result
-      Node<T> t = dummy;
-      Node<T> cNode = head;
-      Node<T> otherCNode = other.head;
-
-      while (cNode != null && otherCNode != null) {
-          int comparison = cNode.getData().compareTo(otherCNode.getData());
-
-          if (comparison == 0) {
-              if (t == dummy || !t.getData().equals(cNode.getData())) {
-                  t.setNext(new Node<>(cNode.getData()));
-                  t = t.getNext();
-              }
-              cNode = cNode.getNext();
-              otherCNode = otherCNode.getNext();
-          } else if (comparison < 0) {
-              cNode = cNode.getNext();
-          } else {
-              otherCNode = otherCNode.getNext();
-          }
-      }
-
-      // Terminate new list
-      t.setNext(null);
-
-      // Replace current list with the intersection
-      head = dummy.getNext();
-      tail = t;
-      //size = calculateSize(head);
-      isSorted = true;
   }
 
 
 
-
-    /**
+/**
    * Merges two sorted lists together into this list. If other is null, do not
    * attempt to merge.
    * Sort MUST be called first on both this list and other list. The resulting
@@ -443,6 +321,8 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
 //      other.sort();
   }
 
+
+
   /**
    * Returns the minimum value of the List
    * If the list is empty, return NULL.
@@ -460,11 +340,12 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
             if (value.compareTo(currNode.getData()) > 0) {
                 value = currNode.getData();
             }
-            currNode = currNode.getNext();
         }
         return value;
     }
   }
+
+
 
   /**
    * Returns the maximum value of the List
@@ -484,11 +365,12 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
               if (value.compareTo(currNode.getData()) < 0) {
                   value = currNode.getData();
               }
-              currNode = currNode.getNext();
           }
           return value;
       }
   }
+
+
 
   /**
    * Note that this method exists for debugging purposes.
@@ -517,6 +399,8 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
       return s;
   }
 
+
+  
   /**
    * Simply returns the isSorted attribute.
    *
