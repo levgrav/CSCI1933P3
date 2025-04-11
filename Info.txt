@@ -1,10 +1,11 @@
 Levi Eby <eby00009>: Wrote ArrayList class
 Minh Nguyen <nguy5571>: Wrote LinkedList class
 assumptions: 
+    In ArrayList.intersect(List other) other and this have no duplicates (though it won't really matter. the duplicates from 'this' will stay and other's will not)
 Additional features: 
     ArrayList.checkIsSorted() checks the list to see if it is sorted when isSorted is false. updates isSorted if so
     ArrayList constructor can also take an array as a parameter and it initializes its data as the data in the array
 Bugs:
-Credit: 
+Credit: Lecture and Lab
 I certify that the information contained in this INFO file is complete and accurate. I have both read and followed the course policies in the ‘Academic Integrity - Course Policy’ section of the course syllabus. 
 Levi Eby, Minh Nguyen

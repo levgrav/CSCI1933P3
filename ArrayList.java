@@ -1,3 +1,5 @@
+// Written by Levi Eby
+
 package CSCI1933P3;
 public class ArrayList<T extends Comparable<T>> implements List<T>{
     
@@ -13,7 +15,7 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
         this.a = (T[]) new Comparable[maxSize];
     }
     
-    public ArrayList(T[] a) {
+    public ArrayList(T[] a) { // Additional feature: can initialize from an array
         this.maxSize = a.length;
         this.size = a.length;
         this.a = a.clone();
@@ -71,15 +73,13 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
         if (index < 0 || index > this.size)
             return false;
 
-        for (int i = size; i > index; i--)
+        for (int i = size; i > index; i--) // shifts all elements one over (ex. {1,2,3,4} adding at index 2 -> {1,2,3,3,4})
             this.a[i] = this.a[i-1];
 
         this.a[index] = element;
 
-        if (size != 0 && (
-            this.a[index].compareTo(this.a[index - 1]) < 0 
-            || (index != this.size 
-            && this.a[index].compareTo(this.a[index + 1]) > 0)))
+        if ((index != 0 && this.a[index].compareTo(this.a[index - 1]) < 0) // is not first and is smaller than the previous 
+            || (index != this.size && this.a[index].compareTo(this.a[index + 1]) > 0)) // or is not last and is bigger than next
             this.isSorted = false;
         
         size ++;
@@ -92,8 +92,8 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
      */
     public void grow() {
         this.maxSize *= 2;
-        T[] a = (T[]) new Comparable[maxSize];
-        for (int i = 0; i < size; i++) {
+        T[] a = (T[]) new Comparable[maxSize]; // creates new array empty but twice the size
+        for (int i = 0; i < size; i++) { // loops through all elements in old array to transfer to new array
             a[i] = this.a[i];
         }
         this.a = a;
@@ -117,7 +117,7 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
      * @return the element at the given index.
      */
     public T get(int index) {
-        if(index >= 0 && index < size)
+        if(index >= 0 && index < size) // makes sure index is in bounds
             return this.a[index];
         else
             return null;
@@ -138,20 +138,43 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
         if (element == null)
             return -1;
 
-        if (isSorted) {
+        if (isSorted) { // binary search algorithm. came up with this myself
             int lower = 0;
             int upper = size - 1;
             ind idx;
 
-            while (lower <= upper) {
-                idx = (lower + upper) / 2;
-                if (element == get(idx))
-                    return idx;
-                else if (element.compareTo(get(idx)) > 0)
+            while (lower <= upper) { // only stops if lower > upper because that means that even when lower = upper it was not there and the element is not in the list
+                idx = (lower + upper) / 2; // looks at elem half way in between
+                if (element.compareTo(get(idx)) > 0) // if elememt > elem @ idx, lower bound is moved to one ahead of idx
                     lower = idx + 1; 
-                else if (element.compareTo(get(idx)) < 0)
+                else if (element.compareTo(get(idx)) < 0) // if elememt < elem @ idx, upper bound is moved to one behind idx
                     upper = idx - 1;
-                else {
+
+                // NOTE: This is only complicated because of the possibility of duplicates and an edge case where the CompareTo method returns 0 but the objects are not equal
+                else { // if element == elem @ idx, or they are otherwise uncomparable
+                    // check for first element where get(idx) == element or get(idx).equals(element)
+                    // Note: ArrayList could be sorted where there are elements that .compareTo returns 0 but are not equal interspersed with each other
+                    int matchIdx = -1; // initialize at -1, so if not changed it will be returned
+                    int i = idx;
+                    
+                    while (element.compareTo(get(i)) == 0) {  // start with idx, and go down until compareTo < 0. if elem @ idx == element, replace matchIdx with new minimum
+                        if (element == get(i) || element.equals(get(i))) {
+                            matchIdx = i;
+                        }
+                        i --;
+                    }
+                    
+                    if (matchIdx == -1) { // if no matching idx found, iterate from idx + 1 up until compareTo > 0 or match found.
+                        i = idx + 1;
+                        while (element.compareTo(get(i)) == 0) {
+                            if (element == get(i) || element.equals(get(i))) {
+                                return i; // once match found it will be the first
+                            }
+                            i ++;
+                        }
+                    }
+                    
+                    return matchIdx; // if match was found initially, return it here. if still no match, return -1
 
                 }
             }
@@ -159,11 +182,11 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
             return -1;
 
         } else {
-            for (int i = 0; i < size; i++) {
-                if (this.a[i] == element)
+            for (int i = 0; i < size; i++) { // loops through array until it finds a match and returns it
+                if (this.get(i) == element || this.get(i).equals(element))
                     return i;
             }
-            return -1;
+            return -1; // if no match
         }
     }
 
@@ -188,7 +211,7 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
      * Sort the elements of the list in ascending order using one of the following sorting algorithms: Selection, Bubble, Insertion
      * If isSorted, does nothing 
      */
-    public void sort() {
+    public void sort() { // Insertion sort. Remembered parts from lecture and lab and came up with the rest on my own
         if (this.isSorted || this.size <= 1) {
             return;
         }
@@ -225,14 +248,15 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
 
         T value = this.a[index];
 
-        for (int i = index + 1; i < size; i++) 
+        for (int i = index + 1; i < size; i++) // shifts over all elements
             this.a[i-1] = this.a[i];
-
-        if (this.size <= 1)
-            this.isSorted = true;
-
+    
         this.a[size-1] = null;
         size --;
+        
+        if (this.size <= 1)
+            this.isSorted = true;
+        
         return value;
         
     }
@@ -241,8 +265,9 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
      * Reverses the list IN PLACE
      */
     public void reverse() { // Note: You must reverse the list IN-PLACE (no intermediate data structures). 
-        for (int i = 0; i < size / 2; i++) {
-            T temp = this.a[i];
+        for (int i = 0; i < size / 2; i++) { // loops through the first half 
+            // replace element (a[i]) with mirror element (a[size - 1 - i])
+            T temp = this.a[i]; 
             this.a[i] = this.a[size - 1 - i];
             this.a[size - 1 - i] = temp;
         }
@@ -257,10 +282,12 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
      * Example A,B,A,C,B,A,D -> A,B,C,D
      */
     public void removeDuplicates() {
-        for (int i = 0; i < this.size - 1; i++) {
-            for (int j = i + 1; j < this.size; j++) {
-                if (this.a[i] == this.a[j])
-                    this.remove(j);
+        for (int i = 0; i < this.size - 1; i++) { // loop through all elements in a except last one
+            for (int j = i + 1; j < this.size; j++) { // check if there are any subsequent matches
+                if (this.a[i] == this.a[j]){
+                    this.remove(j); // remove match
+                    j--; // removal shifts back array, so j needs to sift back, too.
+                }
             }
         }
     }
@@ -281,20 +308,24 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
      * @param otherList list to be used for finding the intersection.
      */
     public void intersect(List<T> otherList) {
+        // Type casting is actually not necessary here because isEmpty(), size() and get() are all methods of List. 
+        // This method would even work on a LinkedList or any other List data structure, though the merged List would be an ArrayList
+        
+        // this.removeDuplicates(); // The intersection operation returns a set with no duplicates, but it should be assumed that the inputs have no duplicates 
+        this.sort();
+
         if (otherList == null || otherList.isEmpty())
             return;
 
-        this.removeDuplicates();
-        this.sort();
         
-        boolean keep;
+        boolean matchFound;
         for(int i = 0; i < this.size; i++) {
-            keep = false;
+            matchFound = false;
             for(int j = 0; j < otherList.size(); j++) {
-                if(this.get(i) == otherList.get(j))
-                    keep = true;
+                if(this.get(i) == otherList.get(j) || this.get(i).equals(otherList.get(j)))
+                    matchFound = true;
             }
-            if (!keep) {
+            if (!matchFound) {
                 this.remove(i);
                 i--;
             }
@@ -326,23 +357,24 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
      * @param list a second list to be merged with this one.
      */
     public void merge(List<T> list) {
-        ArrayList<T> other = (ArrayList<T>) otherList;
+        // Type casting is actually not necessary here because isEmpty(), size() and get() are all methods of List. 
+        // This method would even work on a LinkedList or any other List data structure, though the merged List would be an ArrayList
         this.sort();
-        other.sort();
+        list.sort();
 
-        T[] aNew = (T[]) new Comparable[this.size + other.size];
+        T[] aNew = (T[]) new Comparable[this.size + list.size()]; // new array has the perfect size to fit both
 
         int thisIdx = 0;
         int otherIdx = 0;
-        T thisElem;
+        T thisElem; 
         T otherElem;
 
-        while (thisIdx < this.size || otherIdx < other.size) {
+        while (thisIdx < this.size || otherIdx < list.size()) { // continues while either list has more data
             
-            thisElem = this.get(thisIdx);
-            otherElem = other.get(otherIdx);
+            thisElem = this.get(thisIdx); // mostly for readability, but minimizing calls to get() improves effeciency a little
+            otherElem = list.get(otherIdx); // especially here where other could be a LinkedList and get() is more expensive
 
-            if (thisElem.compareTo(otherElem) <= 0 || otherIdx >= other.size) {
+            if (thisIdx < this.size() && thisElem.compareTo(otherElem) <= 0 || otherIdx >= list.size()) { // checks which element is smaller and adds that. if one runs out of data the other will fill the rest in until loop termination
                 aNew[thisIdx + otherIdx] = thisElem;
                 thisIdx += 1;
             } else {
@@ -351,6 +383,7 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
             } 
         }
 
+        // re-initializing 'this' with the data from 'aNew'
         this.maxSize = aNew.length;
         this.size = aNew.length;
         this.isSorted = true;
@@ -371,8 +404,8 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
             return this.get(0);
         } 
 
-        T min = this.get(0);
-        for (int i = 1; i < this.size; i++) {
+        T min = this.get(0); // assume the first element is the smallest
+        for (int i = 1; i < this.size; i++) { // check each subsequent element, if it's less set it to the new min
             if (min.compareTo(this.get(i)) > 0)
                 min = this.get(i);
         }
@@ -392,8 +425,8 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
             return this.a[this.size-1];
         } 
 
-        T max = this.a[0];
-        for (int i = 1; i < this.size; i++) {
+        T max = this.a[0]; // assume the first element is the max
+        for (int i = 1; i < this.size; i++) { // check each subsequent element, if it is greater, set it to the new max
             if (max.compareTo(this.a[i]) < 0)
                 max = this.a[i];
         }
@@ -417,11 +450,10 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
      * @return String representation of the list.
      */
     public String toString() {
-        String out = "";
-        for (int i = 0; i < this.size; i++) {
-            out += this.a[i] + "\n";
+        String out = "" + this.a[0]; // start with first elem, no new line above it, but it needs to be a string
+        for (int i = 1; i < this.size; i++) {
+            out += "\n" + this.a[i]; // every subsequent element needs to be on a new line
         }
-        out += "\b";
         return out;
     }
 
@@ -440,16 +472,16 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
      * updates isSorted to match and returns the value
      * @return if ArrayList is sorted.
      */
-    public boolean checkIsSorted() {
+    public boolean checkIsSorted() { // Additional feature. An array could be sorted, and we just don't know. This method takes care of that.
         if(this.isSorted)
             return true;
 
-        for (int i = 0; i < this.size - 1; i++) {
-            if(this.a[i].compareTo(this.a[i + 1]) > 0)
+        for (int i = 0; i < this.size - 1; i++) { // loops through each element except the last and checks if it is less than the next one
+            if(this.a[i].compareTo(this.a[i + 1]) > 0) 
                 return false;
         }
 
-        this.isSorted = true;
+        this.isSorted = true; // update this.isSorted if the array s sorted, but we didn't know
         return true;
     }
     public static void main(String[] args) {
@@ -458,10 +490,9 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
         // ArrayList<Integer> a = new ArrayList<Integer>(data);
         // System.out.println(a);
         // System.out.println(a.isSorted());
-        // System.out.println(a.checkIsSorted());
         // a.reverse();
         // System.out.println(a);
-        // System.out.println(a.checkIsSorted());
+        // System.out.println(a.isSorted());
         // a.sort();
         // System.out.println(a);
         // System.out.println(a.isSorted());
