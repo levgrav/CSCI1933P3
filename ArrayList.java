@@ -179,7 +179,7 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
             this.a[i + this.size] = list.get(i);
         }
 
-        if (list.size() != 0 || list.get(0).compareTo(this.a[this.size - 1]) < 0 || !list.isSorted())
+        if (list.size() != 0 || list.get(0).compareTo(this.a[this.size - 1]) < 0 || !list.isSorted(true))
             this.isSorted = false;
 
         this.size += list.size();
@@ -219,49 +219,59 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
         out += "\b\b]";
         return out;
     }
-    
+
     public boolean isSorted() {
+        return isSorted;
+    }
+    
+    public boolean isSorted(boolean check) {
         if(this.isSorted)
             return true;
         
-        for (int i = 0; i < this.size - 1; i++) {
-            if(this.a[i].compareTo(this.a[i + 1]) > 0)
-                return false;
-        }
+        else if(check) {
+            for (int i = 0; i < this.size - 1; i++) {
+                if(this.a[i].compareTo(this.a[i + 1]) > 0)
+                    return false;
+            }
 
-        this.isSorted = true;
-        return true;
+            this.isSorted = true;
+            return true;
+        } else {
+            return false;
+        }
     }
     public static void main(String[] args) {
-        Integer[] data = {1, 2, 3, 4};
-        ArrayList<Integer> a = new ArrayList<Integer>(data);
-        System.out.println(a);
-        System.out.println(a.isSorted());
-        a.reverse();
-        System.out.println(a);
-        System.out.println(a.isSorted());
-        a.sort();
-        System.out.println(a);
-        System.out.println(a.isSorted());
-        a.add(5);
-        System.out.println(a);
-        System.out.println(a.isSorted());
-        a.add(1, 6);
-        System.out.println(a);
-        System.out.println(a.isSorted());
-        System.out.println(a.getMax());
-        System.out.println(a.getMin());
-        Integer[] data2 = {1, 2, 3, 4, 13, 15, 2, 3};
-        ArrayList<Integer> b = new ArrayList<Integer>(data2);
-        System.out.println(b);
-        a.merge(b);
-        System.out.println(a);
-        a.removeDuplicates();
-        System.out.println(a);
-        Integer[] data3 = {4, 5, 6, 7, 8, 9, 12, 13};
-        ArrayList<Integer> c = new ArrayList<Integer>(data3);
-        System.out.println(c);
-        a.intersect(c);
-        System.out.println(a);
+        // ArrayList tests. working properly
+        // Integer[] data = {1, 2, 3, 4};
+        // ArrayList<Integer> a = new ArrayList<Integer>(data);
+        // System.out.println(a);
+        // System.out.println(a.isSorted());
+        // System.out.println(a.isSorted(true));
+        // a.reverse();
+        // System.out.println(a);
+        // System.out.println(a.isSorted(true));
+        // a.sort();
+        // System.out.println(a);
+        // System.out.println(a.isSorted());
+        // a.add(5);
+        // System.out.println(a);
+        // System.out.println(a.isSorted());
+        // a.add(1, 6);
+        // System.out.println(a);
+        // System.out.println(a.isSorted());
+        // System.out.println(a.getMax());
+        // System.out.println(a.getMin());
+        // Integer[] data2 = {1, 2, 3, 4, 13, 15, 2, 3};
+        // ArrayList<Integer> b = new ArrayList<Integer>(data2);
+        // System.out.println(b);
+        // a.merge(b);
+        // System.out.println(a);
+        // a.removeDuplicates();
+        // System.out.println(a);
+        // Integer[] data3 = {4, 5, 6, 7, 8, 9, 12, 13};
+        // ArrayList<Integer> c = new ArrayList<Integer>(data3);
+        // System.out.println(c);
+        // a.intersect(c);
+        // System.out.println(a);
     }
 }
