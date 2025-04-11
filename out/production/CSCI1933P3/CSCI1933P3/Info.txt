@@ -1,0 +1,9 @@
+INFO.txt: Make sure to include a INFO.txt in your submission that contains the following information:
+
+Group member's names and x500s
+Contributions of each partner (if applicable)
+Any assumptions
+Additional features that your project had (if applicable)
+Any known bugs or defects in the program
+Credit ALL outside references used in completing this project both in the INFO.txt file and within the code that utilizes the referenced material.
+Include the statement: “I certify that the information contained in this INFO file is complete and accurate. I have both read and followed the course policies in the ‘Academic Integrity - Course Policy’ section of the course syllabus.” and type your name(s) underneath.
