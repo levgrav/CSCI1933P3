@@ -1,7 +1,9 @@
 Levi Eby <eby00009>: Wrote ArrayList class
 Minh Nguyen <nguy5571>: Wrote LinkedList class
 assumptions: 
-Additional features: ArrayList.isSorted() can also check the list to see if the elements are sorted if the variable isSorted is false 
+Additional features: 
+    ArrayList.checkIsSorted() checks the list to see if it is sorted when isSorted is false. updates isSorted if so
+    ArrayList constructor can also take an array as a parameter and it initializes its data as the data in the array
 Bugs:
 Credit: 
 I certify that the information contained in this INFO file is complete and accurate. I have both read and followed the course policies in the ‘Academic Integrity - Course Policy’ section of the course syllabus. 
