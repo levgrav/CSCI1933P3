@@ -141,7 +141,7 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
         if (isSorted) { // binary search algorithm. came up with this myself
             int lower = 0;
             int upper = size - 1;
-            ind idx;
+            int idx;
 
             while (lower <= upper) { // only stops if lower > upper because that means that even when lower = upper it was not there and the element is not in the list
                 idx = (lower + upper) / 2; // looks at elem half way in between
@@ -157,16 +157,16 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
                     int matchIdx = -1; // initialize at -1, so if not changed it will be returned
                     int i = idx;
                     
-                    while (element.compareTo(get(i)) == 0) {  // start with idx, and go down until compareTo < 0. if elem @ idx == element, replace matchIdx with new minimum
+                    while (get(i) != null && element.compareTo(get(i)) == 0) {  // start with idx, and go down until compareTo < 0 or out of bounds. if elem @ idx == element, replace matchIdx with new minimum
                         if (element == get(i) || element.equals(get(i))) {
                             matchIdx = i;
                         }
                         i --;
                     }
                     
-                    if (matchIdx == -1) { // if no matching idx found, iterate from idx + 1 up until compareTo > 0 or match found.
+                    if (matchIdx == -1) { // if no matching idx found, iterate from idx + 1 up until compareTo > 0 or match found or out of bounds.
                         i = idx + 1;
-                        while (element.compareTo(get(i)) == 0) {
+                        while (get(i) != null && element.compareTo(get(i)) == 0) {
                             if (element == get(i) || element.equals(get(i))) {
                                 return i; // once match found it will be the first
                             }
@@ -256,7 +256,10 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
         
         if (this.size <= 1)
             this.isSorted = true;
-        
+        else {
+            this.checkIsSorted();
+        }
+
         return value;
         
     }
@@ -264,14 +267,15 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
     /**
      * Reverses the list IN PLACE
      */
-    public void reverse() { // Note: You must reverse the list IN-PLACE (no intermediate data structures). 
-        for (int i = 0; i < size / 2; i++) { // loops through the first half 
+    public void reverse() { // Note: You must reverse the list IN-PLACE (no intermediate data structures).
+        for (int i = 0; i < size / 2; i++) { // loops through the first half
             // replace element (a[i]) with mirror element (a[size - 1 - i])
             T temp = this.a[i]; 
             this.a[i] = this.a[size - 1 - i];
             this.a[size - 1 - i] = temp;
         }
         this.isSorted = false;
+        this.checkIsSorted();
     }
 
     /**
@@ -308,7 +312,7 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
      * @param otherList list to be used for finding the intersection.
      */
     public void intersect(List<T> otherList) {
-        // Type casting is actually not necessary here because isEmpty(), size() and get() are all methods of List. 
+        // Type casting is actually not necessary here because isEmpty(), size() and get() are all methods of List.
         // This method would even work on a LinkedList or any other List data structure, though the merged List would be an ArrayList
         
         // this.removeDuplicates(); // The intersection operation returns a set with no duplicates, but it should be assumed that the inputs have no duplicates 
@@ -357,7 +361,7 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
      * @param list a second list to be merged with this one.
      */
     public void merge(List<T> list) {
-        // Type casting is actually not necessary here because isEmpty(), size() and get() are all methods of List. 
+        // Type casting is actually not necessary here because isEmpty(), size() and get() are all methods of List.
         // This method would even work on a LinkedList or any other List data structure, though the merged List would be an ArrayList
         this.sort();
         list.sort();
@@ -464,6 +468,7 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
      */
     public boolean isSorted() {
         return isSorted;
+
     }
     
     /**
@@ -485,36 +490,5 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
         return true;
     }
     public static void main(String[] args) {
-        // ArrayList tests. working properly
-        // Integer[] data = {1, 2, 3, 4};
-        // ArrayList<Integer> a = new ArrayList<Integer>(data);
-        // System.out.println(a);
-        // System.out.println(a.isSorted());
-        // a.reverse();
-        // System.out.println(a);
-        // System.out.println(a.isSorted());
-        // a.sort();
-        // System.out.println(a);
-        // System.out.println(a.isSorted());
-        // a.add(5);
-        // System.out.println(a);
-        // System.out.println(a.isSorted());
-        // a.add(1, 6);
-        // System.out.println(a);
-        // System.out.println(a.isSorted());
-        // System.out.println(a.getMax());
-        // System.out.println(a.getMin());
-        // Integer[] data2 = {1, 2, 3, 4, 13, 15, 2, 3};
-        // ArrayList<Integer> b = new ArrayList<Integer>(data2);
-        // System.out.println(b);
-        // a.merge(b);
-        // System.out.println(a);
-        // a.removeDuplicates();
-        // System.out.println(a);
-        // Integer[] data3 = {4, 5, 6, 7, 8, 9, 12, 13};
-        // ArrayList<Integer> c = new ArrayList<Integer>(data3);
-        // System.out.println(c);
-        // a.intersect(c);
-        // System.out.println(a);
     }
 }
