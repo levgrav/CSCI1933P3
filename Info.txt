@@ -1,6 +1,6 @@
 Levi Eby <eby00009>: Wrote ArrayList class
 Minh Nguyen <nguy5571>: Wrote LinkedList class
-assumptions: 
+Assumptions:
     In ArrayList.intersect(List other) other and this have no duplicates
     (though it won't really matter. the duplicates from 'this' will stay and other's will not)
 Additional features: 
