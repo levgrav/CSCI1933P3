@@ -1,86 +1,97 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
+//Written by nguy5571 & eby00009
 
 package CSCI1933P3;
 
+import java.util.Random; //remove at end
+
 public class LinkedList<T extends Comparable<T>> implements List<T> {
-    private Node<T> head = null;
-    private Node<T> tail = null;
-    private boolean isSorted = true;
-    private int size = 0;
+    private Node<T> head;
+    private Node<T> tail;
+    private boolean isSorted;
+    private int size;
 
     public LinkedList() {
+        head = null;
+        tail = null;
+        isSorted = true;
+        size = 0;
     }
 
     public boolean add(T element) {
-        if (element == null) { // Make sure element is not null
+        if (element == null) { //checks to make sure element is not null
             return false;
-        } else {
-            if (head == null) { // Case 1: first element in list
-                head = new Node(element);
-                tail = head;
-            } else { //Case 2: adds to the end of the list
-                //goes until end of list
-                Node<T> curNode = head;
-                while (curNode.getNext() != null) {
-                    curNode = curNode.getNext();
-                }
+        }
 
-                curNode.setNext(new Node(element)); // makes a new node and sets pointer to that node
-                if (curNode.getData().compareTo(element) > 0) {
-                    // checks if that element is smaller than the element before it
-                    // if it is, then sets isSorted to false
-                    // Since if isSorted was true, then this would make it false
-                    //if isSorted was already false, it will stay false whether
-                    // this new addition is larger or smaller than previous one
-                    isSorted = false;
-                }
+        Node<T> newNode = new Node<T>(element); //creates Node to "store" element
+        if (head == null) { // Case 1: empty list
+            head = newNode; // head points to the new node
+            tail = newNode; //tail points to new node
+        } else { // Case 2: list with at east 1 node
+            tail.setNext(newNode); // puts node after tail
 
-                tail = curNode.getNext(); // tail becomes the added node
+            // Check sorted status using tail (previous last element)
+            // Do not need to check if list is unsorted, since adding element will not sort it
+            if (isSorted && tail.getData().compareTo(element) > 0) {
+                isSorted = false;
             }
 
-            size ++; // size increases by 1
-            return true;
+            tail = newNode;  // Update tail to last node
         }
+
+        size++; //increases size by 1
+        return true;
     }
 
     public boolean add(int index, T element) {
-        if (size == 0 && index >= 0) { // Case 1: new Linked List/ first element
-            head = new Node(element); // head becomes new node, connects to former head
-            tail = this.head;
-        } else if (index == 0) { // Case 2: add before the head
-            head = new Node<T>(element, head); // makes new node, head pointer points to head
-        } else { // Case 3: somewhere in between/ at the end
-            if (index <= 0 || index >= this.size) { // checks to make sure parameter are right
-                return false;
+        if (element == null || index < 0 || index > size) {
+            // checks to make sure that element is not null, or invalid index
+            return false;
+        }
+
+        Node<T> newNode = new Node<T>(element); // makes new node to "store" element
+
+        if (index == 0) { //Case 1: Insert before head
+            newNode.setNext(head); // make node point to head
+            head = newNode; // then make head point to new node
+            if (size == 0) { // if the list was empty, tail also points to new node
+                tail = head;
+            }
+            // Check if adding to head breaks sorted order
+            if (isSorted && size > 0 && head.getNext() != null &&
+                    element.compareTo(head.getNext().getData()) > 0) {
+                isSorted = false;
+            }
+        } else { // Case 2: Insert in between or at the end of list
+            Node<T> prev = head; //starts at head
+            for (int i = 0; i < index - 1; i++) { //iterates to the node before index
+                prev = prev.getNext();
             }
 
-            Node<T> cNode = this.head; // starts from head
+            // inserts node at index by having new node point to the node after previous node
+            // and previous node point to new node
+            newNode.setNext(prev.getNext());
+            prev.setNext(newNode);
 
-            for(int i = 0; i < index - 1; ++i) { // gets to the once before the index
-                cNode = cNode.getNext();
+            if (index == size) { // if inserted at the end of list
+                tail = newNode; // tail points to new node
             }
 
-            Node<T> insertNode = new Node<T>(element, cNode.getNext()); // inserts node at index
-            cNode.setNext(insertNode);
-            size ++; // increases size by 1
-            if (cNode.getData().compareTo(element) > 0 || element.compareTo(insertNode.getNext().getData()) > 0) {
-                // checks if that element is smaller than the element before it and
-                // if element is larger than element after it
-                // if either is true then sets isSorted to false
-                // Since if isSorted was true, then this would make it false
-                // if isSorted was already false, it will stay false whether
-                // this new addition is larger or smaller than previous one
-                this.isSorted = false;
-            }
-
-            if (insertNode.getNext() == null) { // if insertNode is last element, becomes tail
-                this.tail = cNode.getNext();
+            // Check both previous and next elements
+            // Do not need to check if list is unsorted, since adding element will not sort it
+            if (isSorted) {
+                // Check previous element
+                if (prev.getData().compareTo(element) > 0) {
+                    isSorted = false;
+                }
+                // Check next element (if exists)
+                if (newNode.getNext() != null &&
+                        element.compareTo(newNode.getNext().getData()) > 0) {
+                    isSorted = false;
+                }
             }
         }
 
+        size++;
         return true;
     }
 
@@ -93,16 +104,16 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
     }
 
     public T get(int index) {
-        Node<T> cNode = this.head; // starts at head pointer
-        if (index < this.size && index >= 0) { // checks to make sure parameters are correct
-            for(int i = 0; i < index; ++i) { // goes to the node at index
-                cNode = cNode.getNext();
-            }
-
-            return cNode.getData(); //returns the data from that node
-        } else {
-            return null; // otherwise returns null if parameters are wrong
+        if (index < 0 || index >= this.size) {
+            return null;  // Return null if invalid index
         }
+
+        Node<T> cNode = this.head; // starts at head
+        for (int i = 0; i < index; ++i) { // iterates until index
+            cNode = cNode.getNext();
+        }
+
+        return cNode.getData();  // Return the data
     }
 
     public int indexOf(T element) {
@@ -116,7 +127,7 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
             }
 
             if (currNode.getData().compareTo(element) > 0 && this.isSorted) {
-                // if went through list and at a bigger value than element when list is sorted = does not exists
+                // if went through list and at a bigger value than element when list is sorted = does not exist
                 // terminates early to reduce runtime
                 return -1;
             }
@@ -137,6 +148,8 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
 
     public void sort() {
         //bubble sort
+        //is more efficient when already sorted O(n),
+        // dont know if you wanted me to just have a conditional so that we skip check when isSorted = true
         //if swapped even once, iterates through list again to bubble out the largest element
         //keeps iterating until all elements are sorted
         if (head != null && head.getNext() != null) { //Case 1: more than 1 element
@@ -178,6 +191,7 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
                     tail = cNode; //sets tail
                 }
             }
+            this.isSorted = true;
 
         } else { // Case 2: only 1 element
             this.isSorted = true;
@@ -185,63 +199,59 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
     }
 
     public T remove(int index) {
-        if (index >= 0 && index < this.size && this.head != null) {
-            // checks parameters and makes sure list is not empty
-            Node<T> currNode = this.head; // starts from head
-            Node<T> prevNode = null; // previous is null at the beginning
-            Node<T> remNode = null; // pointer to node to be removed, empty at the beginning
-            if (index == 0) { // Case 1: removes head
-                remNode = this.head; // removed node points to head node
-                head = head.getNext(); // sets head to next element
-                if (head == null) { // if list has only 1 element, list becomes empty
-                    tail = null; // sets tail to null
-                }
-            } else if (index == this.size - 1) { // Case 2: remove tail
-                while (currNode.getNext().getNext() != null){
-                    //iterates through list to element before last element
-                    currNode = currNode.getNext();
-                }
-                remNode = tail; // removed node points to tail
-                currNode.setNext(null); // current node points to nothing (end of list)
-                this.tail = currNode; // sets tail to current node
-            } else { // Case 3, remove element in the middle somewhere in list
-                for(int i = 0; i < index; ++i) {
-                    // iterates both previous node and current node to that index
-                    prevNode = currNode;
-                    currNode = currNode.getNext();
-                }
-
-                remNode = currNode; // removed node points to current node
-                remNode.setNext(null); // completely removes association to linked list
-                prevNode.setNext(currNode.getNext()); // previous node points to node after removed node
-            }
-
-            size --; // size is one smaller now
-            if (!this.isSorted) {
-                // if it is not sorted, checks to see if removal made it sorted
-                //if it was sorted, removal will not affect it
-                this.checkSorted(); // calls helper function to check if lists is sorted
-            }
-
-            return remNode.getData(); // returns the removed node data
-        } else {
-            return null; // if parameters were wrong/ lists was empty, returns null
+        if (index < 0 || index >= size) {
+            return null; // invalid index
         }
+
+        T removedData; // stores data to return
+        if (index == 0) { // at head, take data and move head over one
+            removedData = head.getData();
+            head = head.getNext();
+            if (size == 1) {
+                tail = head;
+            }
+        } else { // somewhere in between/ at the end
+            Node<T> prev = head; //iterates through until before index
+            for (int i = 0; i < index - 1; i++) {
+                prev = prev.getNext();
+            }
+            removedData = prev.getNext().getData(); // stores the one to be removed
+            prev.setNext(prev.getNext().getNext()); // changes pointer to remove node to be removed
+            if (index == size - 1) {
+                tail = prev; // tail pointer if last element
+            }
+        }
+
+        size--; // decreases by 1
+        if (size <= 1) {
+            isSorted = true;  // Is sorted since only 1 element
+        } else if (!isSorted) {
+            checkSorted();    // might have become sorted after removal, so checks
+        }
+
+        return removedData;
     }
 
     //helper function to check if list is sorted
-    private void checkSorted(){
-        Node<T> curr = this.head; // starts from head
+    private void checkSorted() {
+        if (size <= 1) { // if one element then already sorted
+            isSorted = true;
+            return;
+        }
 
-        isSorted = true; //sets is sorted to true
-        while (curr != null && curr.getNext() != null && isSorted) {
-            // iterates through the whole linked list, ends when reaching the end or list is not sorted
-            if (curr.getData().compareTo(curr.getNext().getData()) > 0) { // if current element is bigger than next
-                this.isSorted = false; // sets is sorted to false
+        isSorted = true;  // Assume sorted until proven otherwise
+        Node<T> current = head; //starts from head
+
+        while (current.getNext() != null) { // iterates through whole list
+            if (current.getData().compareTo(current.getNext().getData()) > 0) {
+                //compares current and next node, if current node is bigger, unsorted
+                isSorted = false;
+                break; //terminated since found
             }
-            curr = curr.getNext(); // gets next Node
+            current = current.getNext(); // iterates to next node
         }
     }
+
 
     public void reverse() {
         if (head != null && head.getNext() != null) { //Case 1: lists is longer than one element
@@ -258,11 +268,7 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
             }
 
             head = prev; //at the end, previous node will be the head of the reversed linked list
-            if (isSorted){ // if list was sorted before, reversed lists is definetly not sorted
-                isSorted = false;
-            }else { // if list is unSorted before, list could be sorted after reversal
-                checkSorted(); // uses helper function to check
-            }
+            checkSorted(); // makes sure it is sorted
         } // Case 2: lists is one element or less, no need to reverse
     }
 
@@ -272,15 +278,14 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
         }
 
         Node<T> curNode = head; // Start at head
-
+        Node<T> prevNode = null;
         while (curNode != null) { // iterates through list
-            Node<T> prevNode = curNode; // Previous node for tracking
+            prevNode = curNode; // Previous node for tracking
             Node<T> cNode = curNode.getNext(); // node to compare with curNode, start at one after curNode
 
             while (cNode != null) { // iterates through list with cNode
-                if (curNode.getData().compareTo(cNode.getData()) == 0) { //Case 1: it  is a duplicate
+                if (curNode.getData().compareTo(cNode.getData()) == 0) { //Case 1: it is a duplicate
                     prevNode.setNext(cNode.getNext()); //previous node points to node after cNode
-                    cNode.setNext(null); // completely removes duplicate from list
                     cNode = prevNode.getNext(); // Move to the next node
                     size --; // reduces size by 1
                 } else { // Case 2: different Node
@@ -290,56 +295,129 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
             }
             curNode = curNode.getNext(); // Move to the next unique node
         }
-
+        tail = prevNode; // sets tail to last node
         checkSorted(); // checks to see if lists is sorted
-        for(Node<T> cNode = this.head; cNode != null; cNode = cNode.getNext()) { // finds tail
-            if (cNode.getNext() == null) {
-                tail = cNode; //sets tail
-            }
-        }
     }
 
 
-    public void intersect(List<T> otherList) {
-        if (!otherList.isEmpty()) { // Case 1: Other lists is not empty
-            LinkedList<T> other = (LinkedList)otherList;
-            this.sort();
-            other.sort();
-            Node<T> dummy = new Node((Comparable)null);
-            Node<T> t = dummy;
-            Node<T> cNode = this.head;
-            Node<T> otherCNode = other.head;
+    public void intersect(List<T> otherList){
+        if (otherList == null) { //empty list, nothing to merge
+            return;
+        }
 
-            while(cNode != null && otherCNode != null) {
-                int comparison = cNode.getData().compareTo(otherCNode.getData());
-                if (comparison != 0) {
-                    if (comparison < 0) {
-                        cNode = cNode.getNext();
-                    } else {
-                        otherCNode = otherCNode.getNext();
-                    }
-                } else {
-                    if (t == dummy || !t.getData().equals(cNode.getData())) {
-                        t.setNext(new Node(cNode.getData()));
-                        t = t.getNext();
-                    }
+        LinkedList<T> other = (LinkedList<T>) otherList; // type casts other into linkedlist
 
-                    cNode = cNode.getNext();
-                    otherCNode = otherCNode.getNext();
+        // Sort and deduplicate both lists
+        sort();
+        removeDuplicates();
+        other.sort();
+        other.removeDuplicates();
+
+        Node<T> cNode = head; //start from head
+        Node<T> prevNode = null; // use previous node to insert node between current and previous node
+        Node<T> otherCNode = other.head; // other list also start from head
+
+        while (cNode != null && otherCNode != null) { // continues iterating until reaching the end for one list
+            int comparison = cNode.getData().compareTo(otherCNode.getData()); // int to keep track of compareTo value
+
+            if (comparison < 0) {
+                // cNode is not in other list, remove it
+                if (prevNode == null) { // Case 1: if currently at head
+                    head = cNode.getNext();
+                    cNode.setNext(null);
+                    cNode = head;
+                } else { //Case 2: in the middle of the list/last element
+                    prevNode.setNext(cNode.getNext());
+                    cNode.setNext(null);
+                    cNode = prevNode.getNext();
+                }
+                size--; //makes size one smaller
+            } else if (comparison > 0) {
+                // Advance other list
+                otherCNode = otherCNode.getNext();
+            } else {
+                // Match found, keep cNode
+                prevNode = cNode;
+                cNode = cNode.getNext();
+                otherCNode = otherCNode.getNext();
+            }
+        }
+
+        // Remove remaining unmatched nodes from this list
+        // don't care about other list, because we are changing only this list
+        while (cNode != null) {
+            if (prevNode == null) { // Case 1: no match
+                head = null;
+                tail = null;
+                size = 0;
+                return; // list is now empty
+            } else { // Case 2: at least one match
+                //iterates through each of the remaining nodes to calculate size
+                prevNode.setNext(cNode.getNext());
+                cNode.setNext(null);
+                cNode = prevNode.getNext();
+                size--;
+            }
+        }
+
+        tail = prevNode; // updates tail
+        isSorted = true; // is sorted
+    }
+
+    public void merge(List<T> otherList) {
+        if (otherList.isEmpty()) { // if other list is empty, don't merge
+            return;
+        }
+
+        LinkedList<T> other = (LinkedList<T>) otherList; // type casts into Linked List
+        this.sort(); // Sorts list
+        other.sort(); // Sorts  other list
+
+        Node<T> thisCurr = head; // starts at head
+        Node<T> otherCurr = other.head; // other lists starts at head
+        Node<T> prev = null; // previous is null
+
+        if (size == 0){ // Case 1: empty this list
+            head = otherCurr;
+            tail = other.tail; // tail is other list's tail
+        } else { //Case 2: not empty this.list
+            if (otherCurr.getData().compareTo(thisCurr.getData()) < 0) {
+                // if still at head for this list and other current Node is smaller than current Node
+                //change head
+                head = otherCurr; // head = other Curr
+                otherCurr = otherCurr.getNext(); //gets next node
+                head.setNext(thisCurr); //head sets next to this list's current Node
+                thisCurr = head; // starts from new head
+            }
+
+            while (thisCurr != null && otherCurr != null) {
+                // since both lists are sorted and no need to change head, iterates until the end of one of the lists
+                if (thisCurr.getData().compareTo(otherCurr.getData()) <= 0) {
+                    // Case 1: current node is smaller/equal to other node
+                    prev = thisCurr; // iterates to next element
+                    thisCurr = thisCurr.getNext(); //iterates to next element
+                } else { // Case 2: current node is bigger than other node
+                    Node<T> nextOther = otherCurr.getNext(); // marks next node for other list
+                    // inserts other list's node in between previous and current node
+                    prev.setNext(otherCurr);
+                    otherCurr.setNext(thisCurr);
+                    //iterates to next element
+                    prev = otherCurr;
+                    otherCurr = nextOther;
                 }
             }
 
-            t.setNext((Node)null);
-            this.head = dummy.getNext();
-            this.tail = t;
-            this.isSorted = true;
-        } else {
-            this.clear();
+            // Case 1: still items in other list
+            if (otherCurr != null ) {
+                prev.setNext(otherCurr); // links up to the other list
+                tail = other.tail; //tail is other list's tail
+            } // Case 2: still items in original list, doesn't matter, tail stays the same
         }
+        isSorted = true; // is sorted
+        size = size() + other.size(); // size is just the two combined
+        other.clear(); // Remove all references from otherList
     }
 
-    public void merge(List<T> otherlist) {
-    }
 
     public T getMin() {
         if (size == 0) { // Case 1: Lists is empty
@@ -385,10 +463,11 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
     }
 
     public String toString() {
-        String s = "";
-        Node<T> cNode = this.head;
+        String s = ""; // string to return
+        Node<T> cNode = this.head; // starts from head
 
         for(int i = 0; i < this.size; ++i) {
+            //iterates through each node and adds the data into String, newLine every new element
             s = s + String.valueOf(cNode.getData());
             s = s + "\n";
             cNode = cNode.getNext();
@@ -400,4 +479,5 @@ public class LinkedList<T extends Comparable<T>> implements List<T> {
     public boolean isSorted() {
         return this.isSorted; // returns isSorted
     }
+
 }

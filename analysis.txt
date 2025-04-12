@@ -1,0 +1,16 @@
+Method            ArrayList Runtime       LinkedList Runtime
+add(T element)    O(1) best, O(n) worst   O(1)
+Explanation: Arrays have to resize, so they have to go through whole array,
+singly linked lists just add on at the end being faster during those times
+getMin() method   O(n)                    O(n)
+Explanation: both have to iterate through whole list to find minimum
+removeDuplicates  O(n^2)                  O(n^2)
+Explanation: both have to iterate through list again each time you are checking for a element
+reverse()         O(n)                    O(n)
+Explanation: both can be reversed with one iteration,
+technically array is faster since they only traverse half the array and just swap using mirror logic
+
+
+
+
+

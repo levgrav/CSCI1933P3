@@ -1,4 +1,4 @@
-// Written by Levi Eby
+//Written by nguy5571 & eby00009
 
 package CSCI1933P3;
 public class ArrayList<T extends Comparable<T>> implements List<T>{
@@ -286,7 +286,7 @@ public class ArrayList<T extends Comparable<T>> implements List<T>{
      * Example A,B,A,C,B,A,D -> A,B,C,D
      */
     public void removeDuplicates() {
-        for (int i = 0; i < this.size - 1; i++) { // loop through all elements in a except last one
+        for (int i = 0; i < this.size - 1; i++) { // loop through all elements in array except last one
             for (int j = i + 1; j < this.size; j++) { // check if there are any subsequent matches
                 if (this.a[i] == this.a[j]){
                     this.remove(j); // remove match
